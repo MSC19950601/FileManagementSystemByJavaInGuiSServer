@@ -1,5 +1,4 @@
 package com.kururu;
-
 import java.io.*;
 import java.net.*;
 
@@ -12,55 +11,56 @@ public class downloadFileToClient {
     private static final String fileToSendPath = "F:\\myJavaCodeInIntelliIdea\\FileManagementSystem\\serverFile\\";
     private ServerSocket server;
     private Socket client;
-    private DataInputStream dis;
-    private FileOutputStream fos;
+    private DataOutputStream dos;
+    private BufferedOutputStream outToClient;
 
-    public downloadFileToClient(String fileName) {
-
-        while (true) {
-            ServerSocket welcomeSocket;
-            Socket connectionSocket = null;
-            BufferedOutputStream outToClient = null;
-
+    public downloadFileToClient(String fileName) throws IOException{
+        try{
             try {
-                welcomeSocket = new ServerSocket(2014);
-                connectionSocket = welcomeSocket.accept();
-                outToClient = new BufferedOutputStream(connectionSocket.getOutputStream());
-            } catch (IOException ex) {
-                // Do exception handling
-                ex.printStackTrace();
-            }
-
-            if (outToClient != null) {
-                File myFile = new File(fileToSendPath + fileName);
-                byte[] mybytearray = new byte[(int) myFile.length()];
-
-                FileInputStream fis = null;
-
-                try {
-                    fis = new FileInputStream(myFile);
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                    // Do exception handling
+                server = new ServerSocket(2014);
+                while(true){
+                    client = server.accept();
+                    outToClient = new BufferedOutputStream(client.getOutputStream());
+                    if (outToClient != null) {
+                        File myFile = new File(fileToSendPath + fileName);
+                        byte[] mybytearray = new byte[(int) myFile.length()];
+                        FileInputStream fis = new FileInputStream(myFile);
+                        BufferedInputStream bis = new BufferedInputStream(fis);
+                        System.out.println("----BEGIN SEND FILE TO CLIENT<" + fileName +">----");
+                        bis.read(mybytearray, 0, mybytearray.length);
+                        outToClient.write(mybytearray, 0, mybytearray.length);
+                        outToClient.flush();
+                        System.out.println("----SEND FILE<" + fileName +">SUCCESSFULLY-------");
+                        break;
+                    }
                 }
-                BufferedInputStream bis = new BufferedInputStream(fis);
-
-                try {
-                    System.out.println("----BEGIN SEND FILE TO CLIENT<" + fileName +">----");
-                    bis.read(mybytearray, 0, mybytearray.length);
-                    outToClient.write(mybytearray, 0, mybytearray.length);
-                    outToClient.flush();
-                    System.out.println("----SEND FILE<" + fileName +">SUCCESSFULLY-------");
-                    outToClient.close();
-                    connectionSocket.close();
-
-                    // File sent, exit the main method
-                    return;
-                } catch (IOException ex) {
-                    // Do exception handling
-                    ex.printStackTrace();
-                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(outToClient != null)
+                outToClient.close();
+            if(client != null)
+                client.close();
+            if(server != null)
+                server.close();
         }
     }
 }
+
+
+/*class CreateDownloadFiletoClientThread extends Thread{
+    private Socket clientOfDownload;
+    public CreateDownloadFiletoClientThread(Socket s) throws IOException{
+        clientOfDownload = s;
+        start();
+    }
+
+
+
+    public Socket getClientOfDownload(){
+        return clientOfDownload;
+    }
+}*/

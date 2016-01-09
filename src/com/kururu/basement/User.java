@@ -44,12 +44,6 @@ public class User implements Serializable {
         }
     }
 
-    public void getter(){
-        System.out.println(getName());
-        System.out.println(getPassword());
-        System.out.println(getRole());
-    }
-
     public User(String nameInput, String passwordInput, String roleInput){
         if(setter(nameInput,passwordInput,roleInput)){
         }else{

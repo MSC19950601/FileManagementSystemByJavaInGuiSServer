@@ -9,7 +9,7 @@ import java.net.*;
 public class uploadFileFromClient {
 
     private static final String serverPath= "F:\\myJavaCodeInIntelliIdea\\FileManagementSystem\\serverFile\\";
-    private static final int PORT =2013;
+    private static final int PORT = 2016;
 
     private ServerSocket server;
     private Socket client;
@@ -19,10 +19,10 @@ public class uploadFileFromClient {
     public uploadFileFromClient(){
         try {
             try {
-                server =new ServerSocket(PORT);
+                server = new ServerSocket(PORT);
                 while(true){
                     client = server.accept();
-                    dis =new DataInputStream(client.getInputStream());
+                    dis = new DataInputStream(client.getInputStream());
                     //文件名和长度
                     String fileName = dis.readUTF();
                     long fileLength = dis.readLong();
@@ -33,7 +33,7 @@ public class uploadFileFromClient {
                     System.out.println("----BEGIN RECEIVE FILE FROM CLIENT<" + fileName +">----");
                     System.out.println("----FILE LENGTH<" + fileLength +">----");
                     while(true){
-                        int read = 0;
+                        int read;
                         read = dis.read(sendBytes);
                         if(read == -1)
                             break;
@@ -43,7 +43,6 @@ public class uploadFileFromClient {
                         fos.flush();
                     }
                     System.out.println("----RECEIVE FILE<" + fileName +">SUCCESSFULLY-------");
-
                     break;
                 }
             }catch (Exception e) {

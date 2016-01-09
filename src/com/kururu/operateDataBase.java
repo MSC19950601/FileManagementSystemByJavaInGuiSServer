@@ -13,7 +13,7 @@ import java.util.Vector;
 public class operateDataBase {
 
     public static Doc resDoc;
-    public static String resID,resCreator,resDescription,resFilename;
+    public static String resID,resCreator,resDescription,resFilename,resLocation;
     public static Timestamp resTime;
 
     final public static String connectionAddress= "jdbc:mysql://127.0.0.1:3306/baseforsystemcharger";
@@ -115,13 +115,13 @@ public class operateDataBase {
                 String SearchSqlStr = command;
                 ResultSet res = staForSearch.executeQuery(SearchSqlStr);
                 while(res.next()) {
-
                     resID = res.getString("DOC_ID");
                     resCreator = res.getString("DOC_CREATOR");
                     resTime = res.getTimestamp("DOC_TIMESTAMP");
                     resDescription = res.getString("DOC_DESCRIPTION");
                     resFilename = res.getString("DOC_FILENAME");
-                    resDoc = new Doc(resID,resCreator,resTime,resDescription,resFilename);
+                    resLocation = res.getString("DOC_LOCATION");
+                    resDoc = new Doc(resID,resCreator,resTime,resDescription,resFilename,resLocation);
                 }
                 res.close();
                 staForSearch.close();

@@ -13,26 +13,23 @@ public class Main{
 
     private static final int FINAL_PORT = 8899;
     private static ServerSocket serverSocketFinal;
+    private static Socket socketFinal;
 
     public static void main(String[] args) throws IOException {
 
         try{
             serverSocketFinal = new ServerSocket(FINAL_PORT);
-            serverSocketFinal.setSoTimeout(60000);
-
+            serverSocketFinal.setSoTimeout(600000);
             while(true) {
                 MAINPANEL:
                 {
-                    Socket socketFinal = serverSocketFinal.accept();
+                    socketFinal = serverSocketFinal.accept();
                     CreateMainServerThread t = new CreateMainServerThread(socketFinal);
                     if (t.getResultClick().equals("upload")) {
                         new uploadFileFromClient();
-                        break;
-                    } else if (t.getResultClick().equals("downloadForOpe")) {
+                    } else if (t.getResultClick().equals("download")) {
                         String resultFileName = t.getCommand();
-                        System.out.println(resultFileName);
                         new downloadFileToClient(resultFileName);
-                        break;
                     } else if (t.getResultClick().equals("login")) {
                         String resultCommand = t.getCommand();
                         User resultUser = operateDataBase.operationToSearchUser(resultCommand);
@@ -42,11 +39,9 @@ public class Main{
                     } else if (t.getResultClick().equals("getUserTable")) {
                         String resultCommand = t.getCommand();
                         operateDataBase.operationToGetAllUser(resultCommand);
-                        //break MAINPANEL;
                     } else if (t.getResultClick().equals("getDocTable")){
                         String resultCommand = t.getCommand();
                         operateDataBase.operationToGetAllDoc(resultCommand);
-                        //break MAINPANEL;
                     } else if (t.getResultClick().equals("addUser")){
                         String resultCommand = t.getCommand();
                         operateDataBase.operationToInsertUser(resultCommand);
@@ -64,7 +59,7 @@ public class Main{
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            //socketFinal.close();
+            socketFinal.close();
             serverSocketFinal.close();
         }
     }
