@@ -22,10 +22,17 @@ public class operateDataBase {
 
 
     public static User resUser;
+    private static User currentUserForDB;
     public static String resName,resPassword,resRole;
 
-    //private static Vector colHead;
-    //private static Vector rows;
+
+    public static void getCurrentUserFromMainToDB(User currentUser){
+        currentUserForDB = currentUser;
+    }
+
+    public static User getCurrentUserFromOpe(){
+        return currentUserForDB;
+    }
 
     public static void operationToGetAllDoc(String command){
         Vector colHead = new Vector();
@@ -141,7 +148,7 @@ public class operateDataBase {
         }
     }
 
-    public static boolean operationToeleteDoc(String command) throws Exception{
+    public static boolean operationTodeleteDoc(String command) throws Exception{
         try{
             System.out.println("connecting to database now, loading...");
             Class.forName("com.mysql.jdbc.Driver");
@@ -163,6 +170,45 @@ public class operateDataBase {
             e.printStackTrace();
         }finally {
             return true;
+        }
+    }
+
+    public static int operationToGetRowNumOfDoc(){
+        Vector colHead = new Vector();
+        Vector rows = new Vector();
+        Connection connection;
+        Statement statement;
+        ResultSet resultSet;
+        ResultSetMetaData rsmd;
+        try{
+
+            System.out.println("connecting to database now, loading...");
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    connectionAddress, connectionName, connectionPassword);
+            if (!connection.isClosed()) {
+                System.out.println("Connecting successfully!");
+                String query = "SELECT * FROM doc";
+                statement = connection.createStatement();
+                resultSet = statement.executeQuery(query);
+                rsmd = resultSet.getMetaData();
+                for(int i = 1; i < rsmd.getColumnCount() + 1; i++){
+                    colHead.addElement(rsmd.getColumnName(i));
+                    while(resultSet.next()){
+                        Vector currentRow = new Vector();
+                        for(int j = 1; j < rsmd.getColumnCount() + 1; j++){
+                            currentRow.addElement(resultSet.getString(j));
+                        }
+                        rows.addElement(currentRow);
+                    }
+                }
+            }
+        }catch (Exception e){
+            System.err.println("Connecting Failed");
+            e.printStackTrace();
+            System.exit(0);
+        }finally {
+            return rows.size();
         }
     }
 
@@ -355,7 +401,6 @@ public class operateDataBase {
 
     public static boolean operationToupdateUserForNameAndPassword(String command) throws Exception{
         try{
-            String insertSqlStr;
             System.out.println("connecting to database now, loading...");
             Class.forName("com.mysql.jdbc.Driver");
             Connection conForUpdate = DriverManager.getConnection(

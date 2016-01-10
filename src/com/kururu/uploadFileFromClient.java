@@ -1,7 +1,11 @@
 package com.kururu;
 
+import com.kururu.basement.User;
+
 import java.io.*;
 import java.net.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by kururu on 2015/12/30.
@@ -43,6 +47,23 @@ public class uploadFileFromClient {
                         fos.flush();
                     }
                     System.out.println("----RECEIVE FILE<" + fileName +">SUCCESSFULLY-------");
+
+                    int originalNum = operateDataBase.operationToGetRowNumOfDoc();
+                    String originalNumInString = String.valueOf(originalNum);
+                    String updateDOC_ID = "000" + originalNumInString;
+                    User currentUser = operateDataBase.getCurrentUserFromOpe();
+                    String updateDOC_CREATOR = currentUser.getName();
+                    Timestamp updateDOC_TIMESTAMP = new Timestamp(new Date().getTime());
+                    String updateDOC_DESCRIPTION = "upload to server";
+                    String updateDOC_FILENAME = fileName;
+                    String updateDOC_LOCATION = "S";
+
+                    String insertSqlStrForUpdate = "INSERT INTO doc (DOC_ID, DOC_CREATOR, DOC_TIMESTAMP, DOC_DESCRIPTION, DOC_FILENAME, DOC_LOCATION) VALUES "
+                            + "('" + updateDOC_ID + "', '" + updateDOC_CREATOR + "', '" + updateDOC_TIMESTAMP.toString() + "', '" + updateDOC_DESCRIPTION + "', '" + updateDOC_FILENAME + "' ,'" + updateDOC_LOCATION + "')";
+                    if(operateDataBase.operationToInsertDoc(insertSqlStrForUpdate))
+                        System.out.println("insert successful");
+                    else
+                        System.out.println("false!");
                     break;
                 }
             }catch (Exception e) {

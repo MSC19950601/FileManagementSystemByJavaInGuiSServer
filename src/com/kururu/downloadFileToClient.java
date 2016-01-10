@@ -1,6 +1,10 @@
 package com.kururu;
+import com.kururu.basement.User;
+
 import java.io.*;
 import java.net.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 
 /**
@@ -31,6 +35,23 @@ public class downloadFileToClient {
                         outToClient.write(mybytearray, 0, mybytearray.length);
                         outToClient.flush();
                         System.out.println("----SEND FILE<" + fileName +">SUCCESSFULLY-------");
+
+                        int originalNum = operateDataBase.operationToGetRowNumOfDoc();
+                        String originalNumInString = String.valueOf(originalNum);
+                        String updateDOC_ID = "000" + originalNumInString;
+                        User currentUser = operateDataBase.getCurrentUserFromOpe();
+                        String updateDOC_CREATOR = currentUser.getName();
+                        Timestamp updateDOC_TIMESTAMP = new Timestamp(new Date().getTime());
+                        String updateDOC_DESCRIPTION = "download to client";
+                        String updateDOC_FILENAME = fileName;
+                        String updateDOC_LOCATION = "C";
+                        String insertSqlStrForUpdate = "INSERT INTO doc (DOC_ID, DOC_CREATOR, DOC_TIMESTAMP, DOC_DESCRIPTION, DOC_FILENAME, DOC_LOCATION) VALUES "
+                                + "('" + updateDOC_ID + "', '" + updateDOC_CREATOR + "', '" + updateDOC_TIMESTAMP.toString() + "', '" + updateDOC_DESCRIPTION + "', '" + updateDOC_FILENAME + "' ,'" + updateDOC_LOCATION + "')";
+                        if(operateDataBase.operationToInsertDoc(insertSqlStrForUpdate))
+                            System.out.println("insert successful");
+                        else
+                            System.out.println("false!");
+
                         break;
                     }
                 }
@@ -40,27 +61,10 @@ public class downloadFileToClient {
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            if(outToClient != null)
-                outToClient.close();
-            if(client != null)
-                client.close();
-            if(server != null)
-                server.close();
+            if(outToClient != null) outToClient.close();
+            if(client != null) client.close();
+            if(server != null) server.close();
         }
     }
 }
 
-
-/*class CreateDownloadFiletoClientThread extends Thread{
-    private Socket clientOfDownload;
-    public CreateDownloadFiletoClientThread(Socket s) throws IOException{
-        clientOfDownload = s;
-        start();
-    }
-
-
-
-    public Socket getClientOfDownload(){
-        return clientOfDownload;
-    }
-}*/

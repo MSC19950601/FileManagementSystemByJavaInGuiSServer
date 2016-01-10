@@ -14,6 +14,8 @@ public class Main{
     private static final int FINAL_PORT = 8899;
     private static ServerSocket serverSocketFinal;
     private static Socket socketFinal;
+    private static User currentUser;
+    private static int userNum = 0;
 
     public static void main(String[] args) throws IOException {
 
@@ -31,9 +33,12 @@ public class Main{
                         String resultFileName = t.getCommand();
                         new downloadFileToClient(resultFileName);
                     } else if (t.getResultClick().equals("login")) {
+                        userNum++;
                         String resultCommand = t.getCommand();
                         User resultUser = operateDataBase.operationToSearchUser(resultCommand);
                         System.out.println(resultUser.getName());
+                        currentUser = resultUser;
+                        operateDataBase.getCurrentUserFromMainToDB(currentUser);
                         operateDataBase.transForSearchUser(resultUser);
                         break MAINPANEL;
                     } else if (t.getResultClick().equals("getUserTable")) {
@@ -51,6 +56,10 @@ public class Main{
                     } else if (t.getResultClick().equals("changeUserInfo")){
                         String resultCommand = t.getCommand();
                         operateDataBase.operationToupdateUserForNameAndPassword(resultCommand);
+                    } else if(t.getResultClick().equals("quit")){
+                        userNum--;
+                        if(userNum == 0)
+                            break;
                     }
                 }
             }
